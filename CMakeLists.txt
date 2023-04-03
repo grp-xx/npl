@@ -16,6 +16,8 @@ include(CTest)
 enable_testing()
 
 add_executable(main src/main.cpp)
+add_executable(unix_srv src/unix_srv.cpp)
+add_executable(unix_clt src/unix_clt.cpp)
 
 
 
