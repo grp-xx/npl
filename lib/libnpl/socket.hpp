@@ -1,11 +1,14 @@
 #ifndef _SOCKET_HPP_
 #define _SOCKET_HPP_
 #include <cerrno>
+#include <cstddef>
 #include <cstdint>
 #include <system_error>
+#include <utility>
 #include <vector>
 #include <sys/socket.h>
 #include <unistd.h>
+#include "sockaddress.hpp"
 
 namespace npl {
 
@@ -53,6 +56,8 @@ public:
         }
     }
 
+    // Connection management 
+
     void close()
     {
         if (_sockfd != -1) 
@@ -62,14 +67,91 @@ public:
         }
     }
 
+    void bind(const sockaddress<F>& addr) 
+    {
+        if constexpr (F == AF_UNIX) {
+            unlink(addr.name().c_str());
+        }
+        if (::bind(_sockfd, &addr.c_addr(), addr.len()) == -1 ) {
+            throw std::system_error(errno, std::system_category(),"bind");
+        }
+    }
+        
+    void listen(int backlog = 5) 
+    {
+        if (::listen(_sockfd, backlog) == -1 ) {
+            throw std::system_error(errno, std::system_category(),"listen");
+        }
+    }
+        
+    void connect(const sockaddress<F>& remote)
+    {
+        if (::connect(_sockfd, &remote.c_addr(), remote.len()) == -1 ) {
+            throw std::system_error(errno, std::system_category(),"connect");
+        }
+    }
+    
+    
+    
+    std::pair< socket, sockaddress<F> > accept()
+    {
+        sockaddress<F> peer;
+        socket accptd;
+        if ( ( accptd._sockfd = ::accept(_sockfd, &peer.c_addr(), &peer.len()) ) == -1 ) 
+        {
+            throw std::system_error(errno, std::system_category(),"accept");
+        }
+        return std::make_pair(std::move(accptd), peer);
+    }
+
+
+    // I/O methods
+
+    std::ptrdiff_t write(const buffer& buf) const
+    {
+        return ::write(_sockfd, &buf[0], buf.size());
+    }
+
+
+    std::ptrdiff_t sendto(const buffer& buf, const sockaddress<F>& remote, int flags = 0) const
+    {
+        return ::sendto(_sockfd, &buf[0], buf.size(), flags, &remote.c_addr(), remote.len());
+    }
+
+
+
+    std::ptrdiff_t read(buffer& buf) const
+    {
+        return ::read(_sockfd, &buf[0], buf.size());
+    }
+
+    buffer read(int n) const 
+    {
+        buffer buf(n);
+        std::ptrdiff_t nbytes = this->read(buf);
+        return buffer(buf.begin(),buf.begin()+nbytes);
+    }
+
+    std::ptrdiff_t  recvfrom(buffer& buf, int flags, sockaddress<F>& remote) const
+    {
+        return ::recvfrom(_sockfd, &buf[0], buf.size(), flags, &remote.c_addr(), &remote.len());
+    }
+
+    std::pair< buffer, sockaddress<F> > recvfrom(int len, int flags = 0) const
+    {
+        buffer buf(len);
+        sockaddress<F> remote;
+        std::ptrdiff_t nbytes = this->recvfrom(buf,flags,remote);
+        return std::make_pair(buffer(buf.begin(),buf.begin()+nbytes), remote);
+    }
+    
+    
+        
+
+
+
+
 };
-
-
-
-
-
-
-
 
 
 
