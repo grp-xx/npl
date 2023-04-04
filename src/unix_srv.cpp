@@ -5,7 +5,8 @@
 
 int main() {
 
-    npl::socket<AF_UNIX, SOCK_STREAM> sock;
+    //npl::socket<AF_UNIX, SOCK_STREAM> sock;
+    npl::socket<AF_UNIX, SOCK_DGRAM> sock;
 
     std::string sockname = "/tmp/pippo";
 
@@ -13,17 +14,19 @@ int main() {
 
     sock.bind(srvAddr);
 
-    sock.listen();
+    // sock.listen();
 
     for(;;) {
 
-         auto [connected, cltAddr] = sock.accept();
+         // auto [connected, cltAddr] = sock.accept();
      
-         npl::buffer buf = connected.read(80);
+         // npl::buffer buf = connected.read(80);
+         auto [buf, cltAddr] = sock.recvfrom(80);
      
          std::cout << "Message received from: " << cltAddr.name() << std::endl;
      
-         connected.write(buf); 
+         // connected.write(buf); 
+         sock.sendto(buf, cltAddr);
      
 
     }
