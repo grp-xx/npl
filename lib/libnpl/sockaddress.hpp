@@ -2,12 +2,16 @@
 #define _SOCKADDRESS_HPP_
 
 #include <arpa/inet.h>
+#include <cerrno>
 #include <cstring>
 #include <netinet/in.h>
 #include <string>
+#include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <sys/un.h>
 #include <system_error>
+#include <utility>
 
 namespace npl {
 
@@ -143,7 +147,28 @@ namespace npl {
             }
         }
 
-        sockaddress(const std::string& host, const std::string& service);
+        sockaddress(const std::string& host, const std::string& service)
+        : _len(sizeof(sockaddr_in))
+        {
+            memset(&_addr,0,sizeof(sockaddr_in));
+
+            struct addrinfo hints, *result; 
+            
+            // Fill hints struct
+            hints.ai_flags = 0;
+            hints.ai_family = AF_INET;
+            hints.ai_socktype = 0;
+            hints.ai_protocol = 0;
+
+            const char* host_str = (host.empty() ? nullptr : host.c_str());
+
+            if (::getaddrinfo(host_str, service.c_str(), &hints, &result) != 0) 
+            {
+                throw std::system_error(errno,std::generic_category(),"getaddrinfo");
+            }
+            _addr = *(reinterpret_cast<sockaddr_in*>(result->ai_addr));
+            freeaddrinfo(result);
+        }
 
 
         sockaddress(const sockaddress&)            = default;
@@ -202,7 +227,15 @@ namespace npl {
 
 
         std::pair<std::string, std::string> 
-        getnameinfo() const;
+        nameinfo(int flags = 0) const
+        {
+            char hostname[NI_MAXHOST], service[NI_MAXSERV];
+            if (::getnameinfo(&this->c_addr(), this->_len, hostname, sizeof(hostname), service, sizeof(service), flags) != 0 ) 
+            {
+                throw std::system_error(errno, std::generic_category(),"getnameinfo");
+            }
+            return std::make_pair(hostname, service);
+        }
         
         };
 
