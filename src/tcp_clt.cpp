@@ -29,11 +29,11 @@ int main() {
 
     sock.write(buf);
 
-    npl::buffer resp = sock.read(4);
+    npl::buffer resp = sock.readn(4);
     msg_len = ntohl ( reinterpret_cast<int&>(resp.front()) ) ; 
 
 
-    npl::buffer resp_text = sock.read(msg_len);
+    npl::buffer resp_text = sock.readn(msg_len);
 
     std::cout << "Message length: " << msg_len << std::endl;
     std::cout << std::string(resp_text.begin(),resp_text.end()) << std::endl; 

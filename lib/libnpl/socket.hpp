@@ -112,6 +112,27 @@ public:
         return ::write(_sockfd, &buf[0], buf.size());
     }
 
+    std::ptrdiff_t     writen(const buffer& buf, ssize_t n)
+    {
+        std::ptrdiff_t num_written;
+        std::ptrdiff_t tot_written = 0;
+
+        while (tot_written < n ) {
+            num_written = ::write(_sockfd, &buf[tot_written], n-tot_written); 
+
+            if (num_written <= 0)  // An error has happened
+            {
+                if (num_written == -1 && errno == EINTR) 
+                    continue;     // Restart writing bythes form scratch in case of interrupt
+                else 
+                    return -1;  
+            }  
+            tot_written += num_written;
+        }
+        return tot_written;
+    }
+
+
 
     std::ptrdiff_t sendto(const buffer& buf, const sockaddress<F>& remote, int flags = 0) const
     {
@@ -125,11 +146,43 @@ public:
         return ::read(_sockfd, &buf[0], buf.size());
     }
 
+    std::ptrdiff_t     readn(buffer& buf, ssize_t n ) const
+    {
+        std::ptrdiff_t num_read;
+        std::ptrdiff_t tot_read = 0;
+
+        while(tot_read < n)
+        {
+            num_read = ::read(_sockfd, &buf[tot_read], n - tot_read);
+
+            if (num_read == 0)
+                return tot_read;  // EOF reached;
+
+            if (num_read == - 1)  // An error has happened
+            {
+                if (errno == EINTR) 
+                    continue;     // Restart reading bytes in case of interrupt
+                else 
+                    return -1;  
+            } 
+            tot_read+= num_read;
+
+        }
+        return tot_read;
+    }
+
     buffer read(int n) const 
     {
         buffer buf(n);
         std::ptrdiff_t nbytes = this->read(buf);
         return buffer(buf.begin(),buf.begin()+nbytes);
+    }
+
+    buffer     readn(ssize_t len ) const
+    {
+        buffer buf(len);
+        auto tot_read = this->readn(buf,len);
+        return buffer(buf.begin(),buf.begin()+tot_read);
     }
 
     std::ptrdiff_t  recvfrom(buffer& buf, int flags, sockaddress<F>& remote) const
