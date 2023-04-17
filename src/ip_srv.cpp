@@ -28,7 +28,6 @@ int main() {
          // connected.write(buf); 
          sock.sendto(buf, cltAddr);
      
-
     }
 
 
