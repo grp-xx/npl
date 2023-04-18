@@ -22,7 +22,9 @@ add_executable(unix_clt src/unix_clt.cpp)
 add_executable(ip_srv src/ip_srv.cpp)
 add_executable(ip_clt src/ip_clt.cpp)
 add_executable(tcp_clt src/tcp_clt.cpp)
+add_executable(tcp_naive_srv src/tcp_naive_srv.cpp)
 add_executable(tcp_srv src/tcp_srv.cpp)
+add_executable(tcp_mt_srv src/tcp_mt_srv.cpp)
 
 
 

@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
+#include "utility.hpp"
 
 int main() {
 
@@ -18,24 +19,16 @@ int main() {
     std::cout << "Insert text: ";
     std::getline(std::cin,input);
 
-    npl::buffer buf(4);  // sizeof(int) = 4;
-    auto msg_len = htonl( input.size() );
-    auto pp = reinterpret_cast<uint8_t*>(&msg_len);
-    
-    std::copy(pp,pp+(sizeof(int)),buf.begin());
-    buf.insert(buf.end(),input.begin(),input.end());
-
-
+    npl::buffer buf(input.begin(),input.end());
+    npl::addMsgHdr(buf);
 
     sock.write(buf);
 
     npl::buffer resp = sock.readn(4);
-    msg_len = ntohl ( reinterpret_cast<int&>(resp.front()) ) ; 
+    auto resp_len = npl::parseMsgHdr(resp);
+    npl::buffer resp_text = sock.readn(resp_len);
 
-
-    npl::buffer resp_text = sock.readn(msg_len);
-
-    std::cout << "Message length: " << msg_len << std::endl;
+    std::cout << "Response: ";
     std::cout << std::string(resp_text.begin(),resp_text.end()) << std::endl; 
 
     sock.close();
