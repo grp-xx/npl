@@ -132,6 +132,10 @@ public:
         return tot_written;
     }
 
+    std::ptrdiff_t      send(const buffer& buf, int flags = 0) const
+    {
+       return ::send(_sockfd, &buf[0], buf.size(), flags);
+    }
 
 
     std::ptrdiff_t sendto(const buffer& buf, const sockaddress<F>& remote, int flags = 0) const
@@ -184,6 +188,30 @@ public:
         auto tot_read = this->readn(buf,len);
         return buffer(buf.begin(),buf.begin()+tot_read);
     }
+        std::ptrdiff_t      recv(buffer& buf, int flags = 0) const
+        {
+            return ::recv(_sockfd, &buf[0], buf.size(), flags);
+        }
+
+    buffer              recv(int len, int flags = 0) const
+    {
+        buffer buf(len);
+        std::ptrdiff_t n = ::recv(_sockfd, &buf[0], buf.size(), flags);
+        return buffer(buf.begin(),buf.begin()+n);
+    }
+
+    std::ptrdiff_t      recvn(buffer& buf, int flags = 0) const
+    {
+        return ::recv(_sockfd, &buf[0], buf.size(), flags | MSG_WAITALL);
+    }
+
+    
+    buffer              recvn(int len, int flags = 0) const
+    {
+        buffer buf(len);
+        std::ptrdiff_t n = ::recv(_sockfd, &buf[0], buf.size(), flags | MSG_WAITALL);
+        return buffer(buf.begin(),buf.begin()+n);
+    }
 
     std::ptrdiff_t  recvfrom(buffer& buf, int flags, sockaddress<F>& remote) const
     {
@@ -199,7 +227,67 @@ public:
     }
     
     
-        
+    // Advanced socket methods (To be reviewed and made better possibly)
+
+    sockaddress<F> 
+    getsockname() const
+    {
+        sockaddress<F> name;
+        if (::getsockname(_sockfd, &name.c_addr(), &name.len() ) !=0 ) {
+           throw std::system_error(errno,std::generic_category(),"getsockname");
+        }
+        return name;
+    }
+
+    sockaddress<F>
+    getpeername() const
+    {
+        sockaddress<F> name;
+        if (::getpeername(_sockfd, &name.c_addr(), &name.len() ) !=0 ) {
+           throw std::system_error(errno,std::generic_category(),"getpeername");
+        }
+        return name;
+    }
+
+    int
+    setsockopt(int level, int optname, const void *optval, socklen_t optlen)
+    {
+        int out = ::setsockopt(_sockfd, level, optname, optval, optlen);
+        if (out == -1) {
+            throw std::system_error(errno,std::generic_category(),"setsockopt");
+        }
+        return out;
+    }
+
+    int
+    getsockopt(int level, int optname, void *optval, socklen_t *optlen) const
+    {
+        int out = ::getsockopt(_sockfd, level, optname, optval, optlen);
+        if (out == -1) {
+            throw std::system_error(errno,std::generic_category(),"getsockopt");
+        }
+        return out;
+    }
+
+    int set_reuseaddr() 
+    {
+       int optval = 1;
+       int out = ::setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+       if (out == -1) {
+          throw std::system_error(errno,std::generic_category(),"set_reuseaddr");
+       }
+       return out;
+    }
+
+    int broadcast_enable() 
+    {
+       int optval = 1;
+       int out = ::setsockopt(_sockfd, SOL_SOCKET, SO_BROADCAST, &optval, sizeof(optval));
+       if (out == -1) {
+          throw std::system_error(errno,std::generic_category(),"broadcast_enable");
+       }
+       return out;
+    }        
 
 
 
