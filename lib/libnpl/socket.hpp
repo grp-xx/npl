@@ -249,6 +249,7 @@ public:
         return name;
     }
 
+    // Settimng and retrieving socket options
     int
     setsockopt(int level, int optname, const void *optval, socklen_t optlen)
     {
