@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 
 include_directories(lib/libnpl)
+include_directories(lib/nlohmann)
 
 if (UNIX AND NOT APPLE)
     set (LINUX TRUE)
