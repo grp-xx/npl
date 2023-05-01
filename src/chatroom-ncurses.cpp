@@ -105,11 +105,11 @@ void receiver(const std::string& user, WINDOW* win)
     {
         message msg = msg_rcv();
 
-        std::string prompt = (msg.code == "#pm" ? msg.from + " (PM)" : msg.from);
+        std::string prompt = (msg.code == "#pm" ? msg.from + " --> " + msg.to : msg.from);
         std::stringstream ss;
         ss << "<" << prompt << ">" << ": " << msg.text << std::endl;
         m.lock();
-        wprintw(win, ss.str().c_str());
+        wprintw(win, "%s", ss.str().c_str());
         wrefresh(win);
         m.unlock();
         if (msg.code == "#byeOK") {
@@ -177,7 +177,7 @@ int main(int argc, char** argv)
     scrollok(msgwin, true);
 
     attron(A_BOLD);
-    mvprintw(rows-2, 1, user.c_str()); // Print username on top of input win
+    mvprintw(rows-2, 1, "%s", user.c_str()); // Print username on top of input win
     attroff(A_BOLD);
     refresh();
     WINDOW *inframe = newwin(3, cols-1,rows-4,0);

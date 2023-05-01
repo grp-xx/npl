@@ -138,6 +138,7 @@ int main()
             else 
             {
                 msg_send(msg, cmap[msg.to]);
+                msg_send(msg, cmap[msg.from]);
             }
             continue;
         }
