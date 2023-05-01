@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 include_directories(lib/libnpl)
 include_directories(lib/nlohmann)
+include_directories(lib/hdr)
 
 if (UNIX AND NOT APPLE)
     set (LINUX TRUE)
@@ -29,8 +30,11 @@ add_executable(tcp_srv src/tcp_srv.cpp)
 add_executable(tcp_mt_srv src/tcp_mt_srv.cpp)
 add_executable(bcaster src/bcaster.cpp)
 add_executable(blistener src/blistener.cpp)
+add_executable(chatroom-server src/chatroom-server.cpp)
+add_executable(chatroom-ncurses src/chatroom-ncurses.cpp)
+add_executable(chatroom src/chatroom.cpp)
 
-
+target_link_libraries(chatroom-ncurses ncurses)
 
 
 
