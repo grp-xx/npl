@@ -33,6 +33,7 @@ add_executable(blistener src/blistener.cpp)
 add_executable(chatroom-server src/chatroom-server.cpp)
 add_executable(chatroom-ncurses src/chatroom-ncurses.cpp)
 add_executable(chatroom src/chatroom.cpp)
+add_executable(nl-sniff src/nl-sniff.cpp)
 
 target_link_libraries(chatroom-ncurses ncurses)
 
