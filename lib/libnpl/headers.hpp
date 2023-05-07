@@ -18,14 +18,24 @@ template <>
 class header <hdr::ipv4>
 {
     private:
-    struct ip _chdr; 
+    struct ip _chdr;
+    // Option??? 
 
     public:
     header() {};
 
     header(const struct ip* ptr )
     : _chdr(*ptr)
-    {};
+    {
+        // Fill option field...
+
+        // Fix Total length in Mac OS 
+        #ifdef __APPLE__
+            uint16_t ip_hdrlen = _chdr.ip_hl << 2;
+            uint16_t ip_totlen = _chdr.ip_len + ip_hdrlen;
+            _chdr.ip_len = htons(ip_totlen);
+        #endif
+    };
 
     header(const uint8_t* ptr, ssize_t len)
     {
@@ -34,6 +44,14 @@ class header <hdr::ipv4>
             throw std::system_error(errno, std::system_category(), "Packet fragment too short");
         }
         _chdr = *reinterpret_cast<const ip*>(ptr);
+        // Fill option field...
+        
+        // Fix Total length in Mac OS 
+        #ifdef __APPLE__
+            uint16_t ip_hdrlen = _chdr.ip_hl << 2;
+            uint16_t ip_totlen = _chdr.ip_len + ip_hdrlen;
+            _chdr.ip_len = htons(ip_totlen);
+        #endif
     }
 
     header  (header const& rhs) = default;
