@@ -16,8 +16,9 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    npl::socket<AF_PACKET, SOCK_DGRAM> sock;
-    npl::sockaddress<AF_PACKET> device(std::string(argv[1]),ETH_P_IP);
+    // In case of SOCK_DGRAM, adjust protocol in sockt ctor and leave dealult (all) in sockaddress ctor!
+    npl::socket<AF_PACKET, SOCK_DGRAM> sock(htons(ETH_P_IP));
+    npl::sockaddress<AF_PACKET> device(argv[1]);
     sock.bind(device);
     sock.set_promisc(argv[1]);
 

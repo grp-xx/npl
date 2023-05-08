@@ -13,8 +13,9 @@ std::mutex m;
 
 void capture(std::string if_name, int group)
 {
-    npl::socket<AF_PACKET, SOCK_DGRAM> sock;
-    npl::sockaddress<AF_PACKET> device(if_name,ETH_P_IP);
+    // In case of SOCK_DGRAM, adjust protocol in sockt ctor and leave dealult (all) in sockaddress ctor!
+    npl::socket<AF_PACKET, SOCK_DGRAM> sock(htons(ETH_P_IP));
+    npl::sockaddress<AF_PACKET> device(if_name);
     sock.bind(device);
     sock.set_promisc(if_name);
     sock.set_fanout(group);
