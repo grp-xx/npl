@@ -270,6 +270,7 @@ namespace npl {
         }
 
         sockaddress(int if_index, int protocol = ETH_P_ALL)
+        : _len(sizeof(sockaddr_ll))
         {
             memset(&_addr, 0, sizeof(sockaddr_ll));
             _addr.sll_family   = AF_PACKET;
@@ -279,6 +280,7 @@ namespace npl {
 
 
         sockaddress(const std::string& if_name, int protocol = ETH_P_ALL)
+        : _len(sizeof(sockaddr_ll))
         {
             memset(&_addr, 0, sizeof(sockaddr_ll));
             _addr.sll_family   = AF_PACKET;

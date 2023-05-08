@@ -125,6 +125,12 @@ class header <hdr::ipv4>
         return addr;
     }
 
+    auto
+    options() const
+    {
+        return _options;
+    }
+
 
 };
 
