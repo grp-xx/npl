@@ -1,11 +1,13 @@
 #ifndef _HEADERS_HPP_
 #define _HEADERS_HPP_
 
+#include <algorithm>
 #include <arpa/inet.h>
 #include <cstdint>
 #include <netinet/ip.h>
 #include <sys/types.h>
 #include <system_error>
+#include <vector>
 
 enum class hdr {ipv4, icmp, tcp, udp};
 
@@ -19,7 +21,8 @@ class header <hdr::ipv4>
 {
     private:
     struct ip _chdr;
-    // Option??? 
+    // Option 
+    std::vector<u_char> _options;
 
     public:
     header() {};
@@ -28,6 +31,14 @@ class header <hdr::ipv4>
     : _chdr(*ptr)
     {
         // Fill option field...
+        if (_chdr.ip_hl > 5) 
+        {
+            auto opt_len = (_chdr.ip_hl << 2) - 20;
+            auto opt_begin = reinterpret_cast<const u_char*>(ptr) + 20;
+            auto opt_end = opt_begin + opt_len;
+            _options.reserve(opt_len);
+            std::copy(opt_begin,opt_end,_options.begin());
+        }
 
         // Fix Total length in Mac OS 
         #ifdef __APPLE__
@@ -43,8 +54,16 @@ class header <hdr::ipv4>
         {
             throw std::system_error(errno, std::system_category(), "Packet fragment too short");
         }
-        _chdr = *reinterpret_cast<const ip*>(ptr);
+        _chdr = *reinterpret_cast<const struct ip*>(ptr);
         // Fill option field...
+        if (_chdr.ip_hl > 5) 
+        {
+            auto opt_len = (_chdr.ip_hl << 2) - 20;
+            auto opt_begin = ptr + 20;
+            auto opt_end = opt_begin + opt_len;
+            _options.reserve(opt_len);
+            std::copy(opt_begin,opt_end,_options.begin());
+        }
         
         // Fix Total length in Mac OS 
         #ifdef __APPLE__
