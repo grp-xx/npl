@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <net/ethernet.h>
+#include <netinet/in.h>
 #include <netinet/ip.h>
 #include <sys/socket.h>
 
@@ -26,6 +27,8 @@ int main(int argc, char* argv[])
     {
         auto [buf, from] = sock.recvfrom(2000);
         npl::header<hdr::ipv4> iphdr(buf.data(),buf.size());
+
+        if (iphdr.protocol() != IPPROTO_ICMP) continue;
 
         std::cout << iphdr.src() << " --> " << iphdr.dst() << "  Options? " <<(iphdr.options().empty() ? "NO" : "SI" ) << std::endl;
     }
