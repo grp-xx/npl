@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    // In case of SOCK_DGRAM, adjust protocol in sockt ctor and leave dealult (all) in sockaddress ctor!
+    // In case of SOCK_DGRAM, adjust protocol in sockt ctor and leave default (all) in sockaddress ctor!
     npl::socket<AF_PACKET, SOCK_DGRAM> sock(htons(ETH_P_IP));
     npl::sockaddress<AF_PACKET> device(argv[1]);
     sock.bind(device);
