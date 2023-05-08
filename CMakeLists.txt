@@ -35,6 +35,11 @@ add_executable(chatroom-ncurses src/chatroom-ncurses.cpp)
 add_executable(chatroom src/chatroom.cpp)
 add_executable(nl-sniff src/nl-sniff.cpp)
 
+if (LINUX)
+    add_executable(dl-sniff src/dl-sniff.cpp)
+    add_executable(dl-mt-sniff src/dl-mt-sniff.cpp)
+endif()
+
 target_link_libraries(chatroom-ncurses ncurses)
 
 
