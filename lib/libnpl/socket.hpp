@@ -249,7 +249,7 @@ public:
         return name;
     }
 
-    // Settimng and retrieving socket options
+    // Setting and retrieving socket options
     int
     setsockopt(int level, int optname, const void *optval, socklen_t optlen)
     {
@@ -288,7 +288,46 @@ public:
           throw std::system_error(errno,std::generic_category(),"broadcast_enable");
        }
        return out;
-    }        
+    }       
+
+         #ifdef __linux__
+        // Put interface in promisc mode
+        
+        int set_promisc(int ifindex) 
+        {
+            struct packet_mreq mreq = {0};
+            mreq.mr_ifindex = ifindex;
+            mreq.mr_type = PACKET_MR_PROMISC;
+            int out = ::setsockopt(_sockfd, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
+            if (out == -1) {
+                throw std::system_error(errno,std::generic_category(),"set_promisc");
+            }
+            return out;
+        }
+
+        int set_promisc(std::string device)
+        {
+            int if_index = if_nametoindex(device.c_str());
+            if ( if_index == 0 )
+            {
+                throw std::system_error(errno, std::system_category(), "Interface not available");
+            }  
+            return this->set_promisc(if_index);
+        }
+
+
+        // Enable fanout mode (join fanout group)
+        int set_fanout(int group, int mode = PACKET_FANOUT_HASH)
+        {
+            int arg = ( (mode << 16) | group);
+            int out = ::setsockopt(_sockfd, SOL_PACKET, PACKET_FANOUT, &arg, sizeof(arg));
+            if (out == -1) {
+                throw std::system_error(errno,std::generic_category(),"set_fanout");
+            }
+            return out;
+        }
+
+    #endif 
 
 
 
