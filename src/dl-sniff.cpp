@@ -1,3 +1,4 @@
+#include "frame.hpp"
 #include "headers.hpp"
 #include "sockaddress.hpp"
 #include "socket.hpp"
@@ -18,7 +19,7 @@ int main(int argc, char* argv[])
     }
 
     // In case of SOCK_DGRAM, adjust protocol in sockt ctor and leave default (all) in sockaddress ctor!
-    npl::socket<AF_PACKET, SOCK_DGRAM> sock(htons(ETH_P_IP));
+    npl::socket<AF_PACKET, SOCK_RAW> sock(htons(ETH_P_ALL));
     npl::sockaddress<AF_PACKET> device(argv[1]);
     sock.bind(device);
     sock.set_promisc(argv[1]);
@@ -26,11 +27,17 @@ int main(int argc, char* argv[])
     for (;;)
     {
         auto [buf, from] = sock.recvfrom(2000);
-        npl::header<hdr::ipv4> iphdr(buf.data(),buf.size());
+        // npl::header<hdr::ipv4> iphdr(buf.data(),buf.size());
 
-        if (iphdr.protocol() != IPPROTO_ICMP) continue;
+        npl::frame ff(buf.data(),buf.size());
 
-        std::cout << iphdr.src() << " --> " << iphdr.dst() << "  Options? " <<(iphdr.options().empty() ? "NO" : "SI" ) << std::endl;
+        // if (iphdr.protocol() != IPPROTO_ICMP) continue;
+        if ( ff.has<hdr::tcp>() )
+        {
+            auto iphdr = ff.get<hdr::ipv4>();
+            std::cout << iphdr.src() << " --> " << iphdr.dst() << "  Options? " <<(iphdr.options().empty() ? "NO" : "SI" ) << std::endl;
+        } 
+
     }
 
     return EXIT_SUCCESS;
