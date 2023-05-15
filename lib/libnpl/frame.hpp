@@ -147,7 +147,7 @@ namespace npl {
             if constexpr (h == hdr::tcp)   return      header<hdr::tcp>(_tcp);
         }
 
-        // Getter methods
+        // Getter methods returning the pointers to the C headers
         template<hdr h>
         auto c_addr() const
         { 
