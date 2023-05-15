@@ -30,7 +30,7 @@ namespace npl {
 
         frame(const u_char* ptr, ssize_t caplen)
         {
-            if (caplen < sizeof(ether_header)) return;
+            if (ptr == nullptr || caplen < sizeof(ether_header)) return;
             // Assume initiale the frame is plain Ethernet
             _ether = reinterpret_cast<const ether_header*>(ptr);
 
