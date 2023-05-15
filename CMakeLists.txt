@@ -34,6 +34,7 @@ add_executable(chatroom-server src/chatroom-server.cpp)
 add_executable(chatroom-ncurses src/chatroom-ncurses.cpp)
 add_executable(chatroom src/chatroom.cpp)
 add_executable(nl-sniff src/nl-sniff.cpp)
+add_executable(pcap-sniff src/pcap-sniff.cpp)
 
 if (LINUX)
     add_executable(dl-sniff src/dl-sniff.cpp)
@@ -41,6 +42,7 @@ if (LINUX)
 endif()
 
 target_link_libraries(chatroom-ncurses ncurses)
+target_link_libraries(pcap-sniff pcap)
 
 
 

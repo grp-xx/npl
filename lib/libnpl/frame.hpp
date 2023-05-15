@@ -147,11 +147,18 @@ namespace npl {
             if constexpr (h == hdr::tcp)   return      header<hdr::tcp>(_tcp);
         }
 
-
-
-
-
-
+        // Getter methods
+        template<hdr h>
+        auto c_addr() const
+        { 
+            if constexpr (h == hdr::ether) return     _ether;
+            if constexpr (h == hdr::vlan)  return      _vlan;
+            if constexpr (h == hdr::arp)   return       _arp;
+            if constexpr (h == hdr::ipv4)  return      _ipv4;
+            if constexpr (h == hdr::icmp)  return      _icmp;
+            if constexpr (h == hdr::udp)   return       _udp;
+            if constexpr (h == hdr::tcp)   return       _tcp;
+        }
         };
 
 
