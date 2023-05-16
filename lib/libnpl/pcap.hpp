@@ -2,6 +2,7 @@
 #define _PCAP_HPP_
 
 #include <pcap/pcap.h>
+#include <stdexcept>
 #include <sys/types.h>
 #include <system_error>
 #include <utility>
@@ -10,6 +11,13 @@
 enum capture {live, offline};
 
 namespace npl::pcap {
+
+    template<typename F>
+    void callback(u_char* user, const struct pcap_pkthdr* hdr, const u_char* bytes)
+    {
+        auto that = reinterpret_cast<F*>(user);
+        that->operator()(hdr, bytes);
+    }
 
     template <capture mode>
     class reader
@@ -92,14 +100,28 @@ namespace npl::pcap {
             return std::make_pair(hdr, ptr);  
         }
 
+        template<typename F>
+        int loop(F& func, int cnt = -1)
+        {
+            int out;
+            if ( (out = pcap_loop(_handle, cnt, callback<F>, reinterpret_cast<u_char*>(&func))) == -1 )
+            {
+                throw std::runtime_error("pcap_loop error");
+            }
+            return out;
+        }
 
 
-
-
-
-
-
-
+        template<typename F>
+        int dispatch(F& func, int cnt = -1)
+        {
+            int out;
+            if ( (out = pcap_dispatch(_handle, cnt, callback<F>, reinterpret_cast<u_char*>(&func))) == -1 )
+            {
+                throw std::runtime_error("pcap_dispatch error");
+            }
+            return out;
+        }
 
     };
 
