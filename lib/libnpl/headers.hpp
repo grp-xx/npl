@@ -16,10 +16,11 @@
 #include <netinet/ip_icmp.h>
 #include <netinet/udp.h>
 #include <netinet/tcp.h>
+#include <pcap/pcap.h>
 #include <vector>
 
 
-enum class hdr {ether, vlan, arp, ipv4, ipv6, icmp, tcp, udp};
+enum class hdr {pcap, ether, vlan, arp, ipv4, ipv6, icmp, tcp, udp};
 
     struct vlan_header {
         u_char    vlan_dhost[ETHER_ADDR_LEN];
@@ -32,9 +33,69 @@ enum class hdr {ether, vlan, arp, ipv4, ipv6, icmp, tcp, udp};
 
 namespace npl {
 
-
     template <hdr value>
     class header;
+
+    template<>
+    class header<hdr::pcap>
+    {
+    private:
+        struct pcap_pkthdr _chdr;
+    
+    public:
+        header()
+        {
+            memset(&_chdr, 0, sizeof(struct pcap_pkthdr));
+        }
+    
+        explicit header(const pcap_pkthdr* ptr) 
+        {
+            if  ( ptr == nullptr )  
+            {
+                throw std::system_error(errno, std::system_category(), "Can't parse PCAP header");
+            }
+            _chdr = *ptr;
+        }
+
+        header(const u_char* ptr, ssize_t len)
+        {
+            if ( (ptr == nullptr) || len < sizeof(pcap_pkthdr)) 
+            {
+                throw std::system_error(errno, std::system_category(), "PCAP snaplen too short");
+            }
+            _chdr = *reinterpret_cast<const struct pcap_pkthdr*>(ptr);
+        }
+        header  (header const& rhs) = default;
+        header& operator= (header const &) = default;
+        header  (header&& rhs) = default;
+        header& operator=(header &&) = default;
+        ~header() = default; 
+
+        auto
+        c_hdr() const
+        {
+            return _chdr;
+        } 
+
+        auto
+        timestamp() const
+        {
+            return _chdr.ts;
+        }
+
+        auto 
+        caplen() const
+        {
+            return _chdr.caplen;
+        }        
+
+        auto
+        len() const
+        {
+            return _chdr.len;
+        }
+
+    };
 
     template<>
     class header<hdr::ether>
