@@ -49,7 +49,6 @@ void monitor(handler& hand)
 }
 
 
-
 int main()
 {
     // npl::pcap::reader<live> device;
@@ -69,7 +68,9 @@ int main()
 //        } 
 //    }
 
-    npl::pcap::reader<live> device("eth0");
+    //npl::pcap::reader<live> device("eth0");
+    npl::pcap::reader<live> device("en13");
+    device.start();
     // npl::pcap::reader<offline> trace("../Traces/nettare-novlan.pcap");
 
     handler h;
