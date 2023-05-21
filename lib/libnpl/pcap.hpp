@@ -74,8 +74,13 @@ namespace npl::pcap {
 
         reader(reader&& other)
         :_handle(other._handle)
+        ,_dev(other._dev)
+        ,_prog(other._prog)
         {
             other._handle = nullptr;
+            other._dev.clear();
+            other._prog.bf_len = 0;
+            other._prog.bf_insns = nullptr;
         }
 
         reader& operator=(reader&& other)
@@ -84,7 +89,13 @@ namespace npl::pcap {
             {
                 this->close();
                 _handle = other._handle;
+                _dev = other._dev;
+                pcap_freecode(&_prog);
+                _prog = other._prog;
                 other._handle = nullptr;
+                other._dev.clear();
+                other._prog.bf_len = 0;
+                other._prog.bf_insns = nullptr;
                 return *this;
             }
         }
