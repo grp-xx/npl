@@ -2,7 +2,10 @@
 #include "frame.hpp"
 #include <chrono>
 #include <cstdlib>
+#include <iostream>
 #include <pcap/pcap.h>
+#include <sstream>
+#include <string>
 #include <thread>
 
 struct handler
@@ -17,8 +20,10 @@ struct handler
         ++_tot;
         _mut.unlock();
         auto ff = npl::frame(ptr,hdr->len);
+        
         if ( ff.has<hdr::ipv4>() )
         {
+            std::cout << "Protocol: " << ff.get<hdr::ipv4>().protocol() << std::endl;
             _mut.lock();
             ++_ipc;
             _mut.unlock();
@@ -48,40 +53,70 @@ void monitor(handler& hand)
 
 }
 
-
-int main()
+int main(int argc, char* argv[])
 {
-    // npl::pcap::reader<live> device;
-    // npl::pcap::reader<live> device("eth0");
-    // npl::pcap::reader<offline> trace("../Traces/nettare-novlan.pcap");
+    if (argc < 3) 
+    {
+        std::cout << "Usage: " << argv[0] << " [-i device | -f tracefile] [-r filter | -d dump filter]" << std::endl;
+        return EXIT_FAILURE;
+    }
 
-//    for (auto i = 0; i<100;++i)
-//    {
-//        auto [hdr,ptr] = device.next();
-//        std::cout << "Time:        " << hdr.ts.tv_sec << ":" << hdr.ts.tv_usec << std::endl;
-//        std::cout << "Packet size: " << hdr.len << std::endl;
-//        auto ff = npl::frame(ptr,hdr.len);
-//        if ( ff.has<hdr::ipv4>() )
-//        {
-//            auto iphdr = ff.get<hdr::ipv4>();
-//            std::cout << iphdr.src() << " --> " << iphdr.dst() << std::endl;
-//        } 
-//    }
+    std::stringstream ss;
+    bool dumpmode = false;
 
-    //npl::pcap::reader<live> device("eth0");
-    npl::pcap::reader<live> device("en13");
-    device.start();
-    // npl::pcap::reader<offline> trace("../Traces/nettare-novlan.pcap");
+    if (argc >= 4)
+    {
+        if (  std::string(argv[3]) == "-r"   || std::string(argv[3]) == "-d") 
+        {
+            {
+                for (int i = 4; i < argc; ++i) 
+                {
+                    ss << argv[i] << " ";
+                }
+            }
+        }
+        if (std::string(argv[3]) == "-d") 
+        {
+            dumpmode = true;
+        }
+    }
 
-    handler h;
+    if ( std::string(argv[1]) == "-i")
+    {
+        npl::pcap::reader<live> device(argv[2]);
+        device.open();
+        device.filter(ss.str());
 
-    std::thread t(monitor,std::ref(h));
-    device.loop(h);
-    // trace.loop(h);
+        if (dumpmode) {
+            device.print_bpf_program();
+            return EXIT_SUCCESS;
+        } 
 
+        handler h;
 
+        std::thread t(monitor,std::ref(h));
+        t.detach();
+        device.loop(h);
+        return EXIT_SUCCESS;
+    }
 
-    
+    if ( std::string(argv[1]) == "-f")
+    {
+        npl::pcap::reader<offline> trace(argv[2]);
+        // trace.activate();
+        trace.filter(ss.str());
+        if (dumpmode) {
+            trace.print_bpf_program();
+            return EXIT_SUCCESS;
+        } 
+        
+        handler h;
 
-    return EXIT_SUCCESS;
+        std::thread t(monitor,std::ref(h));
+        t.detach();
+        trace.loop(h);
+        return EXIT_SUCCESS;
+    }
+
+    return EXIT_FAILURE;
 }

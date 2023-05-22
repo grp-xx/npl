@@ -103,6 +103,7 @@ namespace npl::pcap {
         ~reader()
         {
             this->close();
+            pcap_freecode(&_prog);
         }
 
         void close()
@@ -205,7 +206,7 @@ namespace npl::pcap {
 
         // Activate device with default values
         void 
-        start() const
+        open() const
         {
             this->snaplen(64);
             this->set_timeout(100);
@@ -273,12 +274,38 @@ namespace npl::pcap {
 
         // Add BPF stuff...
         
-        int
-        filter(std::string rule);
+        void
+        filter(std::string rule)
+        {
+            bpf_u_int32 net;
+            bpf_u_int32 mask = PCAP_NETMASK_UNKNOWN;
+            char errbuf[PCAP_ERRBUF_SIZE];
+
+            if ( (_dev) != "any" && !_dev.empty() )
+            {
+                if ( pcap_lookupnet(_dev.c_str(), &net, &mask, errbuf) != 0) 
+                {
+                    mask = PCAP_NETMASK_UNKNOWN;
+                };
+            }
+
+            if (pcap_compile(_handle, &_prog, rule.c_str(), 1, mask) != 0)
+            {
+                throw std::runtime_error("BPF filter can't be compiled. " + std::string(pcap_geterr(_handle)));
+            }
+
+            if (pcap_setfilter(_handle, &_prog) != 0 )
+            {
+                throw std::runtime_error("BPF filter can't be set. " + std::string(pcap_geterr(_handle)));
+            }
+
+        }
 
         void 
-        print_bpf_program() const;
-
+        print_bpf_program() const
+        {
+            bpf_dump(&_prog, 1);
+        }
 
     };
 
