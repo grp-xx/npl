@@ -56,14 +56,14 @@ namespace npl {
                 {
                     if (caplen < sizeof(struct arphdr)) return;
                     _arp = reinterpret_cast<const struct arphdr*>(_ether+1);
-                    caplen -= sizeof(struct arphdr);
+                    // caplen -= sizeof(struct arphdr);
                 }
 
                 if (_ether->ether_type == htons(ETHERTYPE_IP))
                 {
                     if (caplen < sizeof(struct ip)) return;
                     _ipv4 = reinterpret_cast<const struct ip*>(_ether+1);
-                    caplen -= (_ipv4->ip_hl << 2);
+                    // caplen -= (_ipv4->ip_hl << 2);
                 }
             } 
             else
@@ -73,14 +73,14 @@ namespace npl {
                 {
                     if (caplen < sizeof(struct arphdr)) return;
                     _arp = reinterpret_cast<const struct arphdr*>(_vlan+1);
-                    caplen -= sizeof(struct arphdr);
+                    // caplen -= sizeof(struct arphdr);
                 }
 
                 if (_vlan->ether_type == htons(ETHERTYPE_IP))
                 {
                     if (caplen < sizeof(struct ip)) return;
                     _ipv4 = reinterpret_cast<const struct ip*>(_vlan+1);
-                    caplen -= (_ipv4->ip_hl << 2);
+                    // caplen -= (_ipv4->ip_hl << 2);
                 }
             } 
 
