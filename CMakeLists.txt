@@ -35,6 +35,8 @@ add_executable(chatroom-ncurses src/chatroom-ncurses.cpp)
 add_executable(chatroom src/chatroom.cpp)
 add_executable(nl-sniff src/nl-sniff.cpp)
 add_executable(pcap-sniff src/pcap-sniff.cpp)
+add_executable(probe exams/2022-06-27/probe.cpp)
+add_executable(collector exams/2022-06-27/collector.cpp)
 
 if (LINUX)
     add_executable(dl-sniff src/dl-sniff.cpp)
@@ -43,6 +45,8 @@ endif()
 
 target_link_libraries(chatroom-ncurses ncurses)
 target_link_libraries(pcap-sniff pcap)
+target_link_libraries(probe pcap)
+target_link_libraries(collector pcap)
 
 
 
