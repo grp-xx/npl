@@ -7,9 +7,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 #SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 
+include_directories(/usr/local/include)
 include_directories(lib/libnpl)
 include_directories(lib/nlohmann)
 include_directories(lib/hdr)
+
+link_directories(/usr/local/lib)
 
 if (UNIX AND NOT APPLE)
     set (LINUX TRUE)
@@ -37,6 +40,8 @@ add_executable(nl-sniff src/nl-sniff.cpp)
 add_executable(pcap-sniff src/pcap-sniff.cpp)
 add_executable(probe exams/2022-06-27/probe.cpp)
 add_executable(collector exams/2022-06-27/collector.cpp)
+add_executable(probe-elastic exams/2022-06-27/probe-elastic.cpp)
+add_executable(probe-bulk exams/2022-06-27/probe-bulk.cpp)
 
 if (LINUX)
     add_executable(dl-sniff src/dl-sniff.cpp)
@@ -46,6 +51,8 @@ endif()
 target_link_libraries(chatroom-ncurses ncurses)
 target_link_libraries(pcap-sniff pcap)
 target_link_libraries(probe pcap)
+target_link_libraries(probe-elastic pcap restclient-cpp)
+target_link_libraries(probe-bulk pcap restclient-cpp)
 target_link_libraries(collector pcap)
 
 
