@@ -21,7 +21,13 @@ int main()
         npl::header<hdr::ipv4> hh(&buf[0],buf.size());
 
         
-        std::cout << "Version: " << hh.version() << std::endl;
+        // Fix for Mac OS (it is already in H.B.O.)
+        #ifdef __APPLE__
+            uint16_t ip_hdrlen = hh.c_hdr().ip_hl << 2;
+            uint16_t ip_totlen = hh.c_hdr().ip_len + ip_hdrlen;
+        #endif
+
+        std::cout << "Version: " << hh.version() << "IP Length: " << ip_totlen << std::endl;
         std::cout << hh.src() << " --> " << hh.dst() << std::endl;
         // std::cout << "From:    " << ntohl( hdr->ip_src.s_addr ) << std::endl;
     }

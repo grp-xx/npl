@@ -23,7 +23,9 @@ struct handler
         
         if ( ff.has<hdr::ipv4>() )
         {
-            std::cout << "Protocol: " << ff.get<hdr::ipv4>().protocol() << std::endl;
+            std::cout << "Protocol:       " << ff.get<hdr::ipv4>().protocol() 
+                      << " Packet Length: " << ff.get<hdr::ipv4>().len() 
+                      << " From PCAP:     " << hdr->len << std::endl;
             _mut.lock();
             ++_ipc;
             _mut.unlock();

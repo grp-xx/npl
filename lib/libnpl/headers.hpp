@@ -316,12 +316,12 @@ namespace npl {
                 _options.reserve(opt_len);
                 std::copy(opt_begin,opt_end,_options.begin()); // Or copy to ... &_options[0]
             }
-            // Fix Total length in Mac OS 
-            #ifdef __APPLE__
-                uint16_t ip_hdrlen = _chdr.ip_hl << 2;
-                uint16_t ip_totlen = _chdr.ip_len + ip_hdrlen;
-                _chdr.ip_len = htons(ip_totlen);
-            #endif
+            // Fix Total length in Mac OS --> Works only if packets are capture at network layer via AF_INET, SOCK_RAW
+//            #ifdef __APPLE__
+//                uint16_t ip_hdrlen = _chdr.ip_hl << 2;
+//                uint16_t ip_totlen = _chdr.ip_len + ip_hdrlen;
+//                _chdr.ip_len = htons(ip_totlen);
+//            #endif
         }
 
         header (const uint8_t* ptr, ssize_t size)
@@ -341,12 +341,12 @@ namespace npl {
                 std::copy(opt_begin,opt_end,_options.begin()); // Or copy to ... &_options[0]
             }
             
-            // Fix Total length in Mac OS 
-            #ifdef __APPLE__
-                uint16_t ip_hdrlen = _chdr.ip_hl << 2;
-                uint16_t ip_totlen = _chdr.ip_len + ip_hdrlen;
-                _chdr.ip_len = htons(ip_totlen);
-            #endif
+            // Fix Total length in Mac OS --> Works only if packets are capture at network layer via AF_INET, SOCK_RAW
+//            #ifdef __APPLE__
+//                uint16_t ip_hdrlen = _chdr.ip_hl << 2;
+//                uint16_t ip_totlen = _chdr.ip_len + ip_hdrlen;
+//                _chdr.ip_len = htons(ip_totlen);
+//            #endif
         }
 
         header  (header const& rhs) = default;
