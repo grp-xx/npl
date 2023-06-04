@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <mutex>
-#include <sys/_types/_u_short.h>
 #include <sys/socket.h>
 #include <thread>
 #include <tuple>

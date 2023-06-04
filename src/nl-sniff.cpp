@@ -27,7 +27,8 @@ int main()
             uint16_t ip_totlen = hh.c_hdr().ip_len + ip_hdrlen;
         #endif
 
-        std::cout << "Version: " << hh.version() << "IP Length: " << ip_totlen << std::endl;
+        // std::cout << "Version: " << hh.version() << "IP Length: " << ip_totlen << std::endl;
+        std::cout << "Version: " << hh.version() << "IP Length: " << hh.len() << std::endl;
         std::cout << hh.src() << " --> " << hh.dst() << std::endl;
         // std::cout << "From:    " << ntohl( hdr->ip_src.s_addr ) << std::endl;
     }
