@@ -11,6 +11,7 @@ include_directories(/usr/local/include)
 include_directories(lib/libnpl)
 include_directories(lib/nlohmann)
 include_directories(lib/hdr)
+include_directories(exams/2023-06-05)
 
 link_directories(/usr/local/lib)
 
@@ -42,6 +43,7 @@ add_executable(probe exams/2022-06-27/probe.cpp)
 add_executable(collector exams/2022-06-27/collector.cpp)
 add_executable(probe-elastic exams/2022-06-27/probe-elastic.cpp)
 add_executable(probe-bulk exams/2022-06-27/probe-bulk.cpp)
+add_executable(ip-count exams/2023-06-05/ip-count.cpp)
 
 if (LINUX)
     add_executable(dl-sniff src/dl-sniff.cpp)
@@ -54,6 +56,7 @@ target_link_libraries(probe pcap)
 target_link_libraries(probe-elastic pcap restclient-cpp)
 target_link_libraries(probe-bulk pcap restclient-cpp)
 target_link_libraries(collector pcap)
+target_link_libraries(ip-count pcap)
 
 
 
