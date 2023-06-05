@@ -26,7 +26,7 @@ namespace npl::pcap {
     private:
         pcap_t*    _handle = nullptr;
         std::string  _dev;
-        bpf_program _prog;
+        bpf_program _prog = {0,nullptr};
 
 //    public:
 //        reader(std::string device = "any", int snaplen = 64,  int promisc = 1, int to_ms = 100)  requires (mode == live)  // Thanks to C++20 concepts...
@@ -103,7 +103,10 @@ namespace npl::pcap {
         ~reader()
         {
             this->close();
-            pcap_freecode(&_prog);
+            if (_prog.bf_insns != nullptr) 
+            {
+               pcap_freecode(&_prog);
+            }
         }
 
         void close()
