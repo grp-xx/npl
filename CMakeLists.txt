@@ -7,6 +7,7 @@ include_directories(lib/libnpl)
 
 
 add_executable(main src/main.cpp)
+add_executable(endianness src/endianness.cpp)
 
 include(CTest)
 enable_testing()
