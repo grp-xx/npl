@@ -21,7 +21,7 @@ private:
 public:
     explicit sockaddress(in_port_t port = 0);  //  socket address that uses INADDR_ANY as IP address and port
     sockaddress(const sockaddr_in& addr);
-    sockaddress(const in_addr& ip, const in_port_t port);
+    sockaddress(const in_addr& ip, in_port_t port);
 
     sockaddress(const std::string& host, const in_port_t port)
     : _len(sizeof(sockaddr_in))
