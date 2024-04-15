@@ -19,7 +19,7 @@ private:
     sockaddr_in _addr;
 
 public:
-    sockaddress();  // Empty socket address
+    explicit sockaddress(in_port_t port = 0);  //  socket address that uses INADDR_ANY as IP address and port
     sockaddress(const sockaddr_in& addr);
     sockaddress(const in_addr& ip, const in_port_t port);
 
@@ -40,8 +40,6 @@ public:
 
         _addr = *reinterpret_cast<struct sockaddr_in*>(result->ai_addr);
         freeaddrinfo(result);
-
-
     }
 
 
