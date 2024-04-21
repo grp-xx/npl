@@ -67,7 +67,7 @@ public:
     socklen_t& 
     len();
 
-    sockaddr 
+    const sockaddr& 
     c_addr() const;                              
 
     sockaddr& 
