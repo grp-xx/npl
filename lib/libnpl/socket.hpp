@@ -74,7 +74,7 @@ public:
 
     void listen(int backlog = 5)
     {
-        if (::listen(_sockfd, backlog ) ==-1) {
+        if (::listen(_sockfd, backlog ) == -1) {
             throw std::system_error(errno,std::system_category(),"listen");
         }
     }

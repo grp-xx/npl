@@ -2,6 +2,7 @@
 #define _SOCKADDRRESS_HPP_
 
 #include <string>
+#include <cstring>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -146,7 +147,6 @@ public:
     {
         return reinterpret_cast<struct sockaddr&>(_addr);
     }
-
 
 };
 
