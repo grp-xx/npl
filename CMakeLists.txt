@@ -9,6 +9,7 @@ include_directories(lib/libnpl)
 add_executable(main src/main.cpp)
 add_executable(endianness src/endianness.cpp)
 add_executable(udp_srv src/udp_srv.cpp)
+add_executable(udp_clt src/udp_clt.cpp)
 
 include(CTest)
 enable_testing()
