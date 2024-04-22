@@ -124,7 +124,7 @@ public:
     std::ptrdiff_t
     recvfrom(buffer& buf, sockaddress<F>& remote, int flags = 0) const
     {
-        return ::recvfrom(_sockfd, &buf[0], buf.size(), flags, &remote.c_addr, &remote.len());
+        return ::recvfrom(_sockfd, &buf[0], buf.size(), flags, &remote.c_addr(), &remote.len());
     }
 
     std::pair<buffer, sockaddress<F>>
@@ -132,7 +132,7 @@ public:
     {
         buffer buf(n);
         sockaddress<F> remote;
-        int nbytes = ::recvfrom(_sockfd, &buf[0], buf.size(), flags, &remote.c_addr, &remote.len());
+        int nbytes = ::recvfrom(_sockfd, &buf[0], buf.size(), flags, &remote.c_addr(), &remote.len());
         return std::make_pair(buffer(buf.begin(),buf.begin()+nbytes),remote);
     }
 
