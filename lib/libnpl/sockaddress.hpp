@@ -37,6 +37,22 @@ public:
         _addr.sin_addr.s_addr = htonl(INADDR_ANY);
     }
 
+    sockaddress(const sockaddr_in& addr)
+    : _len(sizeof(sockaddr_in))
+    {
+        memset(&_addr,0,sizeof(sockaddr_in));
+        _addr = addr;
+    }
+
+    sockaddress(const in_addr& ip, const in_port_t port) 
+    : _len(sizeof(sockaddr_in))
+    {
+        memset(&_addr,0,sizeof(sockaddr_in));
+        _addr.sin_family = AF_INET;
+        _addr.sin_port   = htons(port);
+        _addr.sin_addr   = ip;
+    }
+
     sockaddress(const std::string& host, const in_port_t& port)
     : _len(sizeof(sockaddr_in))
     {
@@ -148,6 +164,16 @@ public:
         return reinterpret_cast<struct sockaddr&>(_addr);
     }
 
+    std::pair<std::string, std::string> 
+    nameinfo(int flags = 0) const
+    {
+        char hostname[NI_MAXHOST], service[NI_MAXSERV];
+        if (::getnameinfo(&this->c_addr(), this->_len, hostname, sizeof(hostname), service, sizeof(service), flags) != 0 ) 
+        {
+            throw std::system_error(errno, std::generic_category(),"getnameinfo");
+        }
+        return std::make_pair(hostname, service);
+    }
 };
 
 template<>
