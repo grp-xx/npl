@@ -9,8 +9,8 @@
 int main()
 {
     npl::socket<AF_INET, SOCK_DGRAM> sock;
-    // npl::sockaddress<AF_INET> srv_addr("localhost",15000);
-    npl::sockaddress<AF_INET> srv_addr(15000);
+    npl::sockaddress<AF_INET> srv_addr("10.114.62.226",15000);
+    // npl::sockaddress<AF_INET> srv_addr(15000);
     sock.bind(srv_addr);
 
     for(;;)
