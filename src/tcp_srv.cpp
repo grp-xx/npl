@@ -18,19 +18,29 @@ int main()
     for(;;)
     {
         auto [conn, clt] = sock.accept();
-        std::cout << "Remote client " << clt.host() << " : " << clt.port() << " connected" << std::endl;
-        for(;;)
+
+        auto pid = fork();
+
+        if (pid == 0) // Children process
         {
-            auto buf = conn.read(256);
-            if (buf.empty()) 
-                break;
-            
-            std::transform(buf.begin(),buf.end(),buf.begin(),::toupper);
-            conn.write(buf);
+            std::cout << "Remote client " << clt.host() << " : " << clt.port() << " connected" << std::endl;
+            for(;;)
+            {
+                auto buf = conn.read(256);
+                if (buf.empty()) 
+                    break;
+                
+                std::transform(buf.begin(),buf.end(),buf.begin(),::toupper);
+                conn.write(buf);
+            }
+            conn.close();
+            std::cout << "Remote client " << clt.host() << " : " << clt.port() << " disconnected" << std::endl;
+            exit(EXIT_SUCCESS);
         }
+        // Parent process
         conn.close();
-        std::cout << "Remote client " << clt.host() << " : " << clt.port() << " disconnected" << std::endl;
     }
+    
     sock.close();
     return EXIT_SUCCESS;
 }
