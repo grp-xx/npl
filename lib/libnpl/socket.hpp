@@ -170,7 +170,7 @@ public:
         return tot_read;
     }
 
-        buffer     readn(ssize_t len ) const
+    buffer     readn(ssize_t len ) const
     {
         buffer buf(len);
         auto tot_read = this->readn(buf,len);
