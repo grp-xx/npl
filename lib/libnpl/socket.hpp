@@ -222,7 +222,17 @@ public:
         return std::make_pair(buffer(buf.begin(),buf.begin()+nbytes),remote);
     }
 
+    // Socket Options
 
+    int broadcast_enable() 
+    {
+       int optval = 1;
+       int out = ::setsockopt(_sockfd, SOL_SOCKET, SO_BROADCAST, &optval, sizeof(optval));
+       if (out == -1) {
+          throw std::system_error(errno,std::generic_category(),"broadcast_enable");
+       }
+       return out;
+    }       
 
 
 
