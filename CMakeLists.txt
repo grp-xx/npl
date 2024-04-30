@@ -14,6 +14,9 @@ add_executable(tcp_srv_naive src/tcp_srv_naive.cpp)
 add_executable(tcp_srv src/tcp_srv.cpp)
 add_executable(tcp_srv_mt src/tcp_srv_mt.cpp)
 
+add_executable(bcaster src/bcaster.cpp)
+add_executable(blistener src/blistener.cpp)
+
 include(CTest)
 enable_testing()
 
