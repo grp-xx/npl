@@ -116,7 +116,7 @@ public:
         _addr = addr;
     }
 
-    sockaddress(const in_addr& ip, const in_port_t port) 
+    sockaddress(const in_addr& ip, const in_port_t port = 0) 
     : _len(sizeof(sockaddr_in))
     {
         memset(&_addr,0,sizeof(sockaddr_in));
