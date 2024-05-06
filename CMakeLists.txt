@@ -18,6 +18,7 @@ add_executable(unix_clt src/unix_clt.cpp)
 
 add_executable(bcaster src/bcaster.cpp)
 add_executable(blistener src/blistener.cpp)
+add_executable(l3-sniff src/l3-sniff.cpp)
 
 include(CTest)
 enable_testing()
