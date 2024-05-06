@@ -67,10 +67,14 @@ public:
 
     void bind(const sockaddress<F>& addr)
     {
+        if constexpr (F == AF_UNIX) {
+            unlink(addr.name().c_str());
+        }
         if ((::bind(_sockfd, &addr.c_addr(), addr.len()) ) ==-1) {
             throw std::system_error(errno,std::system_category(),"bind");
         }
     }
+
 
     void listen(int backlog = 5)
     {
