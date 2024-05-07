@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <iostream>
+#include <ostream>
 #include <sys/socket.h>
 #include "headers.hpp"
 #include "sockaddress.hpp"
@@ -17,8 +18,12 @@ int main()
 
     for(;;)
     {
-        auto buf = sock.recv(2000);
+        // auto buf = sock.recv(2000);
+        auto [buf, from] = sock.recvfrom(2000);
         npl::header<hdr::ipv4> iph(buf);
+        std::cout << "--------------" << std::endl;
+        std::cout << "MAC address: " << from.hw_addr() << std::endl;
+        std::cout << "HW type: " << from.hw_type() << std::endl;
         std::cout << iph.src() << "  ---->  " << iph.dst()  << std::endl;
     }
 
