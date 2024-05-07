@@ -6,6 +6,10 @@ set(CMAKE_CXX_STANDARD 20)
 include_directories(lib/libnpl)
 include_directories(lib/nlohmann)
 
+if (UNIX AND NOT APPLE)
+    set (LINUX true)
+endif()
+
 add_executable(main src/main.cpp)
 add_executable(endianness src/endianness.cpp)
 add_executable(udp_srv src/udp_srv.cpp)
@@ -19,6 +23,10 @@ add_executable(unix_clt src/unix_clt.cpp)
 add_executable(bcaster src/bcaster.cpp)
 add_executable(blistener src/blistener.cpp)
 add_executable(l3-sniff src/l3-sniff.cpp)
+
+if (LINUX)
+    add_executable(l2-sniff src/l2-sniff.cpp)
+endif()
 
 include(CTest)
 enable_testing()
