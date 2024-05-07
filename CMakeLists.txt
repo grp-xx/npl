@@ -26,6 +26,7 @@ add_executable(l3-sniff src/l3-sniff.cpp)
 
 if (LINUX)
     add_executable(l2-sniff src/l2-sniff.cpp)
+    add_executable(l2-mt-sniff src/l2-mt-sniff.cpp)
 endif()
 
 include(CTest)
