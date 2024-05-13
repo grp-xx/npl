@@ -49,8 +49,8 @@ namespace npl {
                             } 
 
                             _protocols.push_back(std::make_pair(current_proto, offset));
-                            caplen -= hdr_size;
                             offset += hdr_size;
+                            caplen = _length - offset;
 
                             if (hdr_ptr->ether_type == ntohs(ETHERTYPE_IP)) {
                                 next_hdr = hdr::ipv4;
@@ -77,8 +77,8 @@ namespace npl {
                             auto hdr_ptr = reinterpret_cast<const vlan_header*>(current_ptr);
 
                             _protocols.push_back(std::make_pair(current_proto, offset));
-                            caplen -= hdr_size;
                             offset += hdr_size;
+                            caplen = _length - offset;
 
                             if (hdr_ptr->ether_type == ntohs(ETHERTYPE_IP)) {
                                 next_hdr = hdr::ipv4;
@@ -106,8 +106,8 @@ namespace npl {
                             auto hdr_ptr = reinterpret_cast<const arphdr*>(current_ptr);
 
                             _protocols.push_back(std::make_pair(current_proto, offset));
-                            caplen -= hdr_size;
                             offset += hdr_size;
+                            caplen = _length - offset;
 
                             next_hdr = hdr::unkown;
                             break;
@@ -126,8 +126,8 @@ namespace npl {
 
                             _protocols.push_back(std::make_pair(current_proto, offset));
                             auto iphl = (hdr_ptr->ip_hl << 2);
-                            caplen -= iphl;
                             offset += iphl;
+                            caplen = _length - offset;
 
                             switch (hdr_ptr->ip_p) {
                                 case IPPROTO_ICMP:
@@ -166,8 +166,8 @@ namespace npl {
                             if (current_ptr == nullptr || caplen < hdr_size) return;
 
                             _protocols.push_back(std::make_pair(current_proto, offset));
-                            caplen -= hdr_size;
-                            offset += hdr_size; //+ options...
+                            offset += hdr_size; 
+                            caplen = _length - offset;
 
                             auto hdr_ptr = reinterpret_cast<const udphdr*>(current_ptr);
                             next_hdr = hdr::unkown;
@@ -184,8 +184,8 @@ namespace npl {
                             auto hdr_ptr = reinterpret_cast<const tcphdr*>(current_ptr);
                             _protocols.push_back(std::make_pair(current_proto, offset));
                             auto tcphl = (hdr_ptr->th_off << 2);
-                            caplen -= tcphl;
                             offset += tcphl; //+ options...
+                            caplen = _length - offset;
 
                             next_hdr = hdr::unkown;
                             break;
@@ -199,8 +199,8 @@ namespace npl {
                             if (current_ptr == nullptr || caplen < hdr_size) return;
 
                             _protocols.push_back(std::make_pair(current_proto, offset));
-                            caplen -= hdr_size;
                             offset += hdr_size;
+                            caplen = _length - offset;
                             
                             next_hdr = hdr::unkown;
                             break;
