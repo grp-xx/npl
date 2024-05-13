@@ -16,22 +16,35 @@
 #include <netinet/ip_icmp.h>
 #include <netinet/udp.h>
 #include <netinet/tcp.h>
+#include <unordered_map>
 #include <vector>
 #include "socket.hpp"
 
 
 enum class hdr {ether, vlan, arp, ipv4, ipv6, icmp, udp, tcp, unkown};
 
-constexpr const char * const PROTOCOL_NAME[] = {
-    "Ether",
-    "802.1q",
-    "ARP",
-    "IPv4",
-    "IPv6",
-    "ICMP",
-    "UDP",
-    "TCP"
-};
+//constexpr const char * const PROTOCOL_NAME[] = {
+//    "Ether",
+//    "802.1q",
+//    "ARP",
+//    "IPv4",
+//    "IPv6",
+//    "ICMP",
+//    "UDP",
+//    "TCP"
+//};
+
+const std::unordered_map<hdr, const std::string> PROTOCOL_NAME =
+    { 
+        {hdr::ether, "Ether"},
+        {hdr::vlan,  "802.1q"},
+        {hdr::arp,   "ARP"},
+        {hdr::ipv4,  "IPv4"},
+        {hdr::ipv6,  "IPv6"},
+        {hdr::icmp,  "ICMP"},
+        {hdr::udp,   "UDP"},
+        {hdr::tcp,   "TCP"},
+    }; 
  
 struct vlan_header {
     u_char    vlan_dhost[ETHER_ADDR_LEN];

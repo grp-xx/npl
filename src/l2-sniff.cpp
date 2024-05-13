@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
         // std::cout << "HW type: " << from.hw_type() << std::endl;
         // std::cout << iph.src() << "  ---->  " << iph.dst()  << std::endl;
         auto all = p.dump();
-        for (auto x : all) std::cout << PROTOCOL_NAME[(int) (x.first)] << " : " ; 
+        for (auto x : all) std::cout << PROTOCOL_NAME.at(x.first) << " : " ; 
         std::cout<< std::endl; 
 //        std::cout << p.get<hdr::ipv4>()[0].src() << "--->" << p.get<hdr::ipv4>()[0].dst() << std::endl;
 //        std::cout << "Options: " << std::string(p.get<hdr::ipv4>()[0].options().begin(), p.get<hdr::ipv4>()[0].options().end()) << std::endl;
