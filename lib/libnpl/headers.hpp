@@ -16,20 +16,30 @@
 #include <netinet/ip_icmp.h>
 #include <netinet/udp.h>
 #include <netinet/tcp.h>
-#include <pcap/pcap.h>
 #include <vector>
 #include "socket.hpp"
 
 
-    enum class hdr {ether, vlan, arp, ipv4, ipv6, icmp, udp, tcp, unkown};
+enum class hdr {ether, vlan, arp, ipv4, ipv6, icmp, udp, tcp, unkown};
 
-    struct vlan_header {
-        u_char    vlan_dhost[ETHER_ADDR_LEN];
-        u_char    vlan_shost[ETHER_ADDR_LEN];
-        u_int16_t vlan_tpid;
-        u_int16_t vlan_id;
-        u_int16_t ether_type;
-    };
+constexpr const char * const PROTOCOL_NAME[] = {
+    "Ether",
+    "802.1q",
+    "ARP",
+    "IPv4",
+    "IPv6",
+    "ICMP",
+    "UDP",
+    "TCP"
+};
+ 
+struct vlan_header {
+    u_char    vlan_dhost[ETHER_ADDR_LEN];
+    u_char    vlan_shost[ETHER_ADDR_LEN];
+    u_int16_t vlan_tpid;
+    u_int16_t vlan_id;
+    u_int16_t ether_type;
+};
 
 
 namespace npl {
@@ -200,15 +210,6 @@ namespace npl {
         const struct ip* _ptr;
         uint16_t _len;
     public:
-
-        header()
-        : _ptr(nullptr)
-        {};
-
-        explicit header(const ip* ptr)
-        : _ptr(ptr)
-        {};
-
         header(const uint8_t* ptr, uint16_t len)
         : _ptr(reinterpret_cast<const ip*>(ptr)), _len(len)
         {
