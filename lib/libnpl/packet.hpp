@@ -2,7 +2,6 @@
 #define _PACKET_HPP_
 
 #include "headers.hpp"
-#include <cstdint>
 #include <net/ethernet.h>
 #include <net/if_arp.h>
 #include <netinet/in.h>
