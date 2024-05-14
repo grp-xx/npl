@@ -23,6 +23,8 @@ add_executable(unix_clt src/unix_clt.cpp)
 add_executable(bcaster src/bcaster.cpp)
 add_executable(blistener src/blistener.cpp)
 add_executable(l3-sniff src/l3-sniff.cpp)
+add_executable(cPcap-sniff src/cPcap-sniff.cpp)
+target_link_libraries(cPcap-sniff pcap)
 
 if (LINUX)
     add_executable(l2-sniff src/l2-sniff.cpp)
