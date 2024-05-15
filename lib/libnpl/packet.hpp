@@ -253,6 +253,18 @@ namespace npl {
             return _protocols;
         }
 
+        void display() const
+        {
+            // for (auto &x : _protocols) std::cout << PROTOCOL_NAME.at(x.first) << "  ";
+            // std::cout << std::endl;
+
+            auto print = [](auto p) {
+                std::cout << PROTOCOL_NAME.at(p.first) << "--";
+            };
+
+            std::for_each(_protocols.begin(), _protocols.end()-1, print);
+            std::cout << PROTOCOL_NAME.at(_protocols.back().first);
+        }
     };
 
 
