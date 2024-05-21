@@ -10,6 +10,7 @@
 #include <pcap/pcap.h>
 #include <sys/types.h>
 #include <thread>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <boost/lockfree/spsc_queue.hpp>
@@ -31,10 +32,10 @@ struct md_producer {
 
 void md_consumer(md_producer& md_func) {
     std::unordered_map<std::string,std::pair<int, int>> ip_volume_map;
-    typedef std::pair<std::string, std::pair<int,int>> vec_entry_t;
+    typedef std::tuple<std::string, int,int> vec_entry_t;
 
     auto cmp = [](vec_entry_t x, vec_entry_t y) {
-        return (x.second.first > y.second.first);
+        return (get<1>(x) > get<1>(y));
     };
 
     auto last_ts = std::chrono::steady_clock::now();
@@ -52,15 +53,15 @@ void md_consumer(md_producer& md_func) {
         auto delta = std::chrono::duration_cast<std::chrono::seconds>(now-last_ts).count();
         if (delta > 5) { // 5 seconds or more have passed
             std::vector<vec_entry_t> volume_vec;
-            for (auto& x : ip_volume_map) volume_vec.push_back(x);
+            for (auto [k,v] : ip_volume_map) volume_vec.push_back(std::make_tuple(k,v.first,v.second));
             std::sort(volume_vec.begin(),volume_vec.end(),cmp);
 
             std::cout << "----- Top Ten -----" << std::endl;
-            std::cout << "IP \t\t pkts \t bytes" << std::endl;
+            std::cout << "IP\t\tpkts\tbytes" << std::endl;
             std::cout << "-------------------" << std::endl;
             for (auto i = 0; i < std::min<int>(10, volume_vec.size()) ; i++ )
-                std::cout << volume_vec[i].first << "\t" << volume_vec[i].second.first 
-                          << "\t" << volume_vec[i].second.second << std::endl;
+                std::cout << get<0>(volume_vec[i]) << "\t" << get<1>(volume_vec[i]) 
+                          << "\t" << get<2>(volume_vec[i]) << std::endl;
             std::cout << "-------------------" << std::endl;
             last_ts = std::chrono::steady_clock::now();
         } 
