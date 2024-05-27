@@ -393,7 +393,8 @@ namespace npl {
         c_hdr() const
         {
             return *_ptr;
-        } 
+        }
+
         unsigned short
         dstport() const{
             return ntohs(_ptr->th_dport);
@@ -404,6 +405,13 @@ namespace npl {
         {
             // Returns the IP header length in bytes
             return static_cast<unsigned short>(_ptr->th_off << 2);
+        }
+
+        bool 
+        syn() const
+        {
+            return ((_ptr->th_flags & TH_SYN) == TH_SYN);
+            // return static_cast<bool>(-_ptr->syn);
         }
 
         auto 

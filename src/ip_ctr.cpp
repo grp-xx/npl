@@ -16,44 +16,48 @@
 #include <boost/lockfree/spsc_queue.hpp>
 #include <vector>
 
-typedef std::pair<std::string, int> ip_len_entry;
+typedef std::pair<std::string, int> queue_entry;
 
 struct md_producer {
-    boost::lockfree::spsc_queue<ip_len_entry, boost::lockfree::capacity<1024>> queue;
+    boost::lockfree::spsc_queue<queue_entry, boost::lockfree::capacity<1024>> queue;
     
     void operator()(const pcap_pkthdr* hdr, const u_char* pkt_ptr)
     {
         npl::packet<hdr::ether> frame(pkt_ptr,hdr->caplen);
         auto ip = frame.get<hdr::ipv4>().front();
-        ip_len_entry md = std::make_pair(ip.src(), ip.len());
+        queue_entry md = std::make_pair(ip.src(), ip.len());
         queue.push(md);
     }
 };
 
 void md_consumer(md_producer& md_func) {
-    std::unordered_map<std::string,std::pair<int, int>> ip_volume_map;
     typedef std::tuple<std::string, int,int> vec_entry_t;
 
+    struct {
+        std::unordered_map<std::string,std::pair<int, int>> ip_volume_map;
+        void operator()(const queue_entry& entry )
+        {
+            ip_volume_map[entry.first].first++;
+            ip_volume_map[entry.first].second+=entry.second;
+        }
+
+    } fill_map;
+
     auto cmp = [](vec_entry_t x, vec_entry_t y) {
-        return (get<1>(x) > get<1>(y));
+        return (get<2>(x) > get<2>(y));
     };
 
     auto last_ts = std::chrono::steady_clock::now();
 
     for (;;)
     {
-        if (!md_func.queue.empty()) {
-            ip_len_entry md;
-            md_func.queue.pop(md);
-            ip_volume_map[md.first].first++;
-            ip_volume_map[md.first].second+=md.second;
-        }
+        md_func.queue.consume_all(fill_map);
 
         auto now = std::chrono::steady_clock::now();
         auto delta = std::chrono::duration_cast<std::chrono::seconds>(now-last_ts).count();
         if (delta > 5) { // 5 seconds or more have passed
             std::vector<vec_entry_t> volume_vec;
-            for (auto [k,v] : ip_volume_map) volume_vec.push_back(std::make_tuple(k,v.first,v.second));
+            for (auto [k,v] : fill_map.ip_volume_map) volume_vec.push_back(std::make_tuple(k,v.first,v.second));
             std::sort(volume_vec.begin(),volume_vec.end(),cmp);
 
             std::cout << "----- Top Ten -----" << std::endl;
