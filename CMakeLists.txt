@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.5.0)
 project(npl VERSION 0.1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED 20)
 set(CMAKE_CXX_STANDARD 20)
@@ -6,6 +6,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 include_directories(lib/libnpl)
 include_directories(lib/nlohmann)
+
+if (APPLE)
+    set(BOOST_ROOT /usr/local/Cellar/boost/1.85.0)
+    set(BOOST_INCLUDEDIR /usr/local/Cellar/boost/1.85.0/include)
+    set(BOOST_LIBRARY_DIR /usr/local/Cellar/boost/1.85.0/lib)
+
+    find_package(Boost 1.85.0 COMPONENTS system filesystem REQUIRED)
+
+    include_directories(${Boost_INCLUDE_DIR})
+
+    if(NOT Boost_FOUND)
+        message(FATAL_ERROR "Could not find boost!")
+    endif()
+endif()
 
 if (UNIX AND NOT APPLE)
     set (LINUX true)
