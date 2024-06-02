@@ -407,11 +407,29 @@ namespace npl {
             return static_cast<unsigned short>(_ptr->th_off << 2);
         }
 
-        bool 
-        syn() const
+        bool
+        syn_flag() const
         {
-            return ((_ptr->th_flags & TH_SYN) == TH_SYN);
-            // return static_cast<bool>(-_ptr->syn);
+            return static_cast<bool>(_ptr->th_flags & TH_SYN); 
+            // return static_cast<bool>(_ptr->syn); // Does not work on Mac OS
+        }
+
+        bool
+        ack_flag() const
+        {
+            return static_cast<bool>(_ptr->th_flags & TH_ACK);
+        }
+
+        bool
+        fin_flag() const
+        {
+            return static_cast<bool>(_ptr->th_flags & TH_FIN);
+        }
+        
+        bool
+        rst_flag() const
+        {
+            return static_cast<bool>(_ptr->th_flags & TH_RST);
         }
 
         auto 
