@@ -389,6 +389,22 @@ class sockaddress<AF_INET6> {
     };
     #endif
 
+template <int F, typename T>
+std::string 
+ntop (const T&addr);
+
+template <>
+std::string
+inline ntop<AF_INET, uint32_t>(const uint32_t& addr)
+{
+    char pres[INET_ADDRSTRLEN];
+
+    if ( ( inet_ntop(AF_INET, reinterpret_cast<const void*>(&addr), pres, sizeof(pres)) ) == nullptr ) 
+    {
+        throw std::system_error(errno, std::generic_category(), "inet_ntop");
+    }
+    return pres;
+}
 
 }
 
