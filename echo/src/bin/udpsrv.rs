@@ -10,7 +10,7 @@ fn main() {
         let (size, clt) = socket.recv_from(&mut buffer).unwrap();
 
         let rx = str::from_utf8(&buffer[..size]).unwrap();
-        println!("Received {} from clt: {}:{}",rx,clt.ip(),clt.port());
+        println!("Received {} from clt: {}:{}", rx, clt.ip(), clt.port());
         let response = rx.to_uppercase();
         let _ = socket.send_to(response.as_bytes(), clt);
     }
