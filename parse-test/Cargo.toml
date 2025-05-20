@@ -1,0 +1,9 @@
+[package]
+name = "parse-test"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+etherparse = "0.18.0"
+pcap = "2.2.0"
+pnet_packet = "0.35.0"
