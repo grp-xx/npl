@@ -3,6 +3,8 @@ use pnet::datalink::{Config, FanoutOption, FanoutType, NetworkInterface};
 use pnet::packet::Packet;
 use pnet::packet::ethernet::{EtherTypes, EthernetPacket};
 use pnet::packet::ipv4::Ipv4Packet;
+use pnet::packet::ip::IpNextHeaderProtocols;
+use pnet::packet::tcp::TcpPacket;
 
 fn set_interface(iface: &str) -> Option<NetworkInterface> {
     datalink::interfaces().into_iter().find(|i| i.name == iface)
@@ -55,6 +57,17 @@ fn main() {
                                         ip_hdr.get_source(),
                                         ip_hdr.get_destination()
                                     );
+                                    if ip_hdr.get_next_level_protocol() == IpNextHeaderProtocols::Tcp {
+                                        if let Some(tcp) = TcpPacket::new(ip_hdr.payload()) {
+                                        println!(
+                                            "Thread {}   {}:{} ->{}:{}",
+                                            i, ip_hdr.get_source(), 
+                                            ip_hdr.get_destination(), 
+                                            tcp.get_source(), 
+                                            tcp.get_destination()
+                                        );
+                                    }
+                    }
                                 };
                             }
                             _ => {}
