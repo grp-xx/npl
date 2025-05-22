@@ -51,19 +51,14 @@ fn main() {
                             EtherTypes::Ipv4 => {
                                 let ip = Ipv4Packet::new(eth_hdr.payload());
                                 if let Some(ip_hdr) = ip {
-                                    println!(
-                                        "Thread {}: {} --> {}",
-                                        i,
-                                        ip_hdr.get_source(),
-                                        ip_hdr.get_destination()
-                                    );
                                     if ip_hdr.get_next_level_protocol() == IpNextHeaderProtocols::Tcp {
                                         if let Some(tcp) = TcpPacket::new(ip_hdr.payload()) {
                                         println!(
                                             "Thread {}   {}:{} ->{}:{}",
-                                            i, ip_hdr.get_source(), 
-                                            ip_hdr.get_destination(), 
+                                            i, 
+                                            ip_hdr.get_source(), 
                                             tcp.get_source(), 
+                                            ip_hdr.get_destination(), 
                                             tcp.get_destination()
                                         );
                                     }
