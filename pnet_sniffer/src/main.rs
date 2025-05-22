@@ -15,7 +15,7 @@ fn main() {
     // let devices = datalink::interfaces();
     let iface = &ifaces[0];
 
-    let num_threads = 4;
+    let num_threads = 2;
     let mut t = vec![];
 
     for i in 0..num_threads {
@@ -30,8 +30,8 @@ fn main() {
             let f_out: FanoutOption = FanoutOption {
                 group_id: 1234,
                 fanout_type: FanoutType::HASH,
-                defrag: false,
-                rollover: true,
+                defrag: true,
+                rollover: false,   // A lezione mi era erroneamente rimasto settato a true, cosa che induceva la duplicazione di pacchetti
             };
 
             configuration.linux_fanout = Some(f_out);
@@ -54,7 +54,7 @@ fn main() {
                                     if ip_hdr.get_next_level_protocol() == IpNextHeaderProtocols::Tcp {
                                         if let Some(tcp) = TcpPacket::new(ip_hdr.payload()) {
                                         println!(
-                                            "Thread {}   {}:{} ->{}:{}",
+                                            "Thread {}   {}:{} -> {}:{}",
                                             i, 
                                             ip_hdr.get_source(), 
                                             tcp.get_source(), 
