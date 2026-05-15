@@ -21,26 +21,26 @@ struct Cli {
     verbose: u8,
 }
 
-
-
 fn main() {
 
     let cli = Cli::parse();
 
     match (cli.interface, cli.file) {
         (Some(interface), None) => {
-            verbose_log(
-                cli.verbose,
-                1,
-                format!("Reading from network interface: {}", interface),
-            );
+//            verbose_log(
+//                cli.verbose,
+//                1,
+//                format!("Reading from network interface: {}", interface),
+//            );
+            live_capture(cli.verbose, &interface);
         }
         (None, Some(file)) => {
-            verbose_log(
-                cli.verbose,
-                1,
-                format!("Reading from file: {}", file.display()),
-            );
+//            verbose_log(
+//                cli.verbose,
+//                1,
+//                format!("Reading from file: {}", file.display()),
+//            );
+            read_from_file(cli.verbose, &file);
         }
         _ => unreachable!(), // This should never happen due to the ArgGroup
     } 
@@ -49,7 +49,15 @@ fn main() {
 
 }
 
+fn live_capture(verbose: u8,interface: &str) {
+    // Placeholder for live capture logic
+    verbose_log(verbose, 2, format!("Starting live capture on interface: {}", interface));
+}
 
+fn read_from_file(verbose: u8,file: &PathBuf) {
+    // Placeholder for file reading logic
+    verbose_log(verbose, 2, format!("Starting to read from file: {}", file.display()));
+}
 
 fn verbose_log(verbose: u8, level: u8, message: String) {
     if verbose >= level {
