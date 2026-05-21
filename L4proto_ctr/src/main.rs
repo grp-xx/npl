@@ -1,6 +1,7 @@
 use clap::{ArgGroup, Parser};
 use std::path::PathBuf;
 use std::io::Write;
+use utils::log::verbose_log;
 
 
 #[derive(Parser, Debug)]
@@ -107,10 +108,4 @@ fn stats(rx: std::sync::mpsc::Receiver<u8>, verbose: u8) {
 }
 
 
-
-fn verbose_log(verbose: u8, level: u8, message: String) {
-    if verbose >= level {
-        eprintln!("{message}");
-    }
-}
 
