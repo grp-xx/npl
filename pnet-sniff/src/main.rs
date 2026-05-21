@@ -2,6 +2,7 @@ use pnet::datalink::{self, Config, Channel::Ethernet};
 use pnet::packet::ethernet::{EthernetPacket, EtherType};
 use pnet::packet::{Packet,ipv4::Ipv4Packet};
 use clap::Parser;
+use utils::log::verbose_log;
 
 #[derive(Parser, Debug)]
 
@@ -24,11 +25,7 @@ fn main() {
     let nic = cli.interface.unwrap();
     // let interfaces = datalink::interfaces();
 
-    let interface = datalink::interfaces()
-                    .into_iter()
-                    .find(|iface| iface.name == nic)
-                    .expect("Interface unavailable");
-
+    let interface= utils::pnet::get_interface(&nic);
 
 
 
@@ -51,13 +48,16 @@ fn main() {
                 
                 match ethhdr.get_ethertype() {
                     EtherType(0x0800) => {
-                        if let Some(ipv4hdr) = Ipv4Packet::new(ethhdr.payload()) { 
-                            println!("IPv4 packet detected!");
-                            println!("{} -> {}", ipv4hdr.get_source(), ipv4hdr.get_destination());
+                        if let Some(ipv4hdr) = Ipv4Packet::new(ethhdr.payload()) {
+                            utils::log::verbose_log(cli.verbose,
+                                2,
+                                format!("IPv4 packet detected: {} -> {}", ipv4hdr.get_source(), ipv4hdr.get_destination())); 
                         }
                     }
                     EtherType(0x86DD) => println!("IPv6 packet detected!"),
-                    _ => println!("Other EtherType: {:?}", ethhdr.get_ethertype()),
+                    _ => utils::log::verbose_log(cli.verbose, 
+                        2, 
+                        format!("Other EtherType: {:?}", ethhdr.get_ethertype())),
                 }
             }
             Err(e) => {
