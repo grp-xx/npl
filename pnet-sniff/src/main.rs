@@ -55,7 +55,7 @@ fn main() {
                         }
                     }
                     EtherType(0x86DD) => println!("IPv6 packet detected!"),
-                    _ => utils::log::verbose_log(cli.verbose, 
+                    _ => verbose_log(cli.verbose, 
                         2, 
                         format!("Other EtherType: {:?}", ethhdr.get_ethertype())),
                 }
