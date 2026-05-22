@@ -11,10 +11,14 @@ struct Cli {
     #[arg(short = 'i', long)]
     interface: Option<String>,
     
+    /// Number of threads to use
+    #[arg(short = 't', long, default_value_t = 1)]
+    threads: usize,
+
     /// Number of packets to capture
     #[arg(short = 'n', long, default_value = None)]
-    numpkts: Option<usize>,
-
+    packets: Option<usize>,
+    
     /// Verbose mode (-v, -vv, -vvv, etc.)
     #[arg(short, long, action = clap::ArgAction::Count)]
     verbose: u8,
