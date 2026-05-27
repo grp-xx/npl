@@ -9,4 +9,5 @@ pnet = { version = "0.35.0", optional=true }
 [features]
 default = ["log"]
 log = []
+net = []
 pnet-utils = ["pnet"]
