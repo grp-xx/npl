@@ -1,5 +1,5 @@
 use std::net::SocketAddrV4;
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct FlowIdV4(pub SocketAddrV4, pub SocketAddrV4, pub u8);
 
 impl FlowIdV4 {
@@ -14,12 +14,8 @@ impl FlowIdV4 {
 
 impl std::fmt::Display for FlowIdV4 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{} -> {} (proto {})",
-            self.0,
-            self.1,
-            self.2
-        )
+        let s = format!("{:<21} -> {:<21} ({:>3})", self.0, self.1, self.2);
+
+        f.pad(&s)
     }
 }
